@@ -35,12 +35,8 @@ def parseArgs():
         "-y", "--deny", action="store_true", help="Deny access",
     )
     store = parser.add_mutually_exclusive_group(required=False)
-    store.add_argument(
-        "-r", "--remember", required=False, action="store_true", help="remember path"
-    )
-    store.add_argument(
-        "-f", "--forget", required=False, action="store_true", help="forget path"
-    )
+    store.add_argument("-r", "--remember", action="store_true", help="remember path")
+    store.add_argument("-f", "--forget", action="store_true", help="forget path")
     pargs = parser.parse_args()
 
     return pargs
@@ -81,7 +77,7 @@ def main(pargs):
         config = []
 
     if pargs.list:
-        dirPath = listFiles(config)
+        dirPath = pathlib.Path(listFiles(config))
     else:
         dirPath = pargs.dir.resolve()
 
@@ -104,11 +100,13 @@ def main(pargs):
 
     if pargs.remember or pargs.forget:
         if str(dirPath) not in config and pargs.remember:
-                config.append(str(dirPath))
+            config.append(str(dirPath))
         elif str(dirPath) in config and pargs.forget:
-                config.remove(str(dirPath))
+            config.remove(str(dirPath))
         with open(configFile, "w", encoding="utf-8") as f:
-                json.dump(config, f)
+            json.dump(config, f)
 
 
 main(parseArgs())
+
+# TODO: force allow using takeown
