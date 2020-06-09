@@ -89,14 +89,11 @@ def main(pargs):
         # subprocess.run(cmdOwn)
         subprocess.run(cmdAttrib(["-r", "-i", "+s", "+h"]))
         subprocess.run(cmdIcacls(["/deny", "EVERYONE:F"]))
-        # print(cmdAttrib(["-r", "+s", "+h", "-i"]))
-        # print(cmdIcacls(["/deny", "EVERYONE:F"]))
 
     else:
         subprocess.run(cmdIcacls(["/reset"]))
         # subprocess.run(cmdOwn)
         subprocess.run(cmdAttrib(["-s", "-h"]))
-        # print(cmdIcacls(["/reset"]))
 
     if pargs.remember or pargs.forget:
         if str(dirPath) not in config and pargs.remember:
@@ -110,3 +107,4 @@ def main(pargs):
 main(parseArgs())
 
 # TODO: force allow using takeown
+# TODO: suppress output cmd, check return code
