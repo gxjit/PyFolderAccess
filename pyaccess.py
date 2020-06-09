@@ -34,10 +34,13 @@ def parseArgs():
     group.add_argument(
         "-y", "--deny", action="store_true", help="Deny access",
     )
-    parser.add_argument(
+    store = parser.add_mutually_exclusive_group(required=False)
+    store.add_argument(
         "-r", "--remember", required=False, action="store_true", help="remember path"
     )
-
+    store.add_argument(
+        "-f", "--forget", required=False, action="store_true", help="forget path"
+    )
     pargs = parser.parse_args()
 
     return pargs
@@ -49,7 +52,7 @@ def makeTargetDirs(dirPath):
 
 
 def getConfigFile():
-    configPath = pathlib.Path(path.join(path.expanduser("~"), ".tonfig"))
+    configPath = pathlib.Path(path.join(path.expanduser("~"), ".config"))
     makeTargetDirs(configPath)
     configFile = configPath.joinpath("remembered")
     return configFile
@@ -84,25 +87,27 @@ def main(pargs):
 
     cmdIcacls = lambda cmd: ["icacls", str(dirPath), *cmd, "/c", "/l", "/q"]
     cmdAttrib = lambda cmd: ["attrib", *cmd, str(dirPath), "/D", "/l"]
-    cmdOwn = ["takeown", "/f", str(dirPath), "/r", "/d", "Y"]
+    # cmdOwn = ["takeown", "/f", str(dirPath), "/r", "/d", "Y"]
 
     if pargs.deny:
-        subprocess.run(cmdOwn)
+        # subprocess.run(cmdOwn)
         subprocess.run(cmdAttrib(["-r", "-i", "+s", "+h"]))
         subprocess.run(cmdIcacls(["/deny", "EVERYONE:F"]))
         # print(cmdAttrib(["-r", "+s", "+h", "-i"]))
         # print(cmdIcacls(["/deny", "EVERYONE:F"]))
 
     else:
-        subprocess.run(cmdOwn)
-        subprocess.run(cmdIcacls("/reset"))
+        subprocess.run(cmdIcacls(["/reset"]))
+        # subprocess.run(cmdOwn)
         subprocess.run(cmdAttrib(["-s", "-h"]))
-        print(cmdIcacls(["/reset"]))
+        # print(cmdIcacls(["/reset"]))
 
-    if pargs.remember:
-        if str(dirPath) not in config:
-            config.append(str(dirPath))
-            with open(configFile, "w", encoding="utf-8") as f:
+    if pargs.remember or pargs.forget:
+        if str(dirPath) not in config and pargs.remember:
+                config.append(str(dirPath))
+        elif str(dirPath) in config and pargs.forget:
+                config.remove(str(dirPath))
+        with open(configFile, "w", encoding="utf-8") as f:
                 json.dump(config, f)
 
 
