@@ -4,6 +4,7 @@ usage: pyaccess.py [-h]  (-d DIR | -l) (-a | -y) [-r | -f]
 
 optional arguments:
   -h, --help         show this help message and exit
+
   -d DIR, --dir DIR  Directory path
 
   -l, --list         list remembered paths
