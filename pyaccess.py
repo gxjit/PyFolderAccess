@@ -108,3 +108,4 @@ main(parseArgs())
 
 # TODO: force allow using takeown
 # TODO: suppress output cmd, check return code
+# TODO: add take ownership FOR CURRENT USER
